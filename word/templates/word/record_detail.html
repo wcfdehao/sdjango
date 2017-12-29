@@ -1,0 +1,33 @@
+{% extends 'word/index.html' %}
+{% load word_tags %}
+{% block content %}
+    <div class="container" style="width: 1000px">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th class="col-md-1">id</th>
+                    <th class="col-md-2">单词</th>
+                    <th>解释</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in record_details %}
+                    <tr>
+                        <td>{{ item.word.id }}</td>
+                        <td>{{ item.word.word }}</td>
+                        <td>{{ item.word.means }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                {% record_is_need_review record as record %}
+                {% if record %}
+                    <tr>
+                        <td colspan="3"><a href="{% url 'word:review' record.id %}" class="pull-right btn btn-info">{% get_review_str record %}</a></td>
+                    </tr>
+                {% endif %}
+                <tr></tr>
+            </tfoot>
+        </table>
+    </div>
+{% endblock %}

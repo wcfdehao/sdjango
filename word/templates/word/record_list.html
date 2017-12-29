@@ -1,0 +1,83 @@
+{% extends 'word/index.html' %}
+{% load word_tags %}
+
+{% block css %}
+    <style type="text/css">
+    td {
+
+        line-height: 34px !important;
+    }
+    </style>
+{% endblock %}
+{% block content %}
+
+    <div class="container" style="width: 1000px">
+        <div style="margin: 10px">
+
+
+        <form action="" class="form-inline">
+            <div class="form-group">
+                <label for="status">状态</label>
+                <select class="form-control" name="" id="status">
+                    <option>------</option>
+                    <option value="all">全部</option>
+                    {% for item in status_choies %}
+                        <option value="{{ item.0 }}">{{ item.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="type">类型</label>
+                <select class="form-control" name="" id="type">
+                    <option>------</option>
+                    <option value="all">全部</option>
+
+                    {% for item in type_choies %}
+                        <option value="{{ item.0 }}">{{ item.1 }}</option>
+                    {% endfor %}
+                    <option value="done">完成</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" class="form-control" value="筛选">
+            </div>
+
+        </form>
+        </div>
+        <table class="table table-bordered " id="my">
+            <tr>
+                <th>id</th>
+                <th>数量</th>
+                <th>类型</th>
+                <th>状态</th>
+                <th>测试次数</th>
+                <th>复习</th>
+                <th>测试</th>
+                <th>时间</th>
+            </tr>
+            {% for record in records %}
+{#                {% create_rehcord_row record as record %}#}
+
+                <tr>
+                <td><a href="{% url 'word:record_detail' record.id %}">{{ record.id }}</a></td>
+                <td>{{ record.num }}</td>
+                <td>{{ record.get_type_display }}</td>
+                <td>{{ record.get_status_display }}</td>
+                <td>{{ record.test_times }}</td>
+                    <td>
+                        <a href="{% url 'word:record_detail' record.id %}" class="btn btn-success" >复习</a>
+                    </td>
+                    <td>
+                        <a href="#" class="btn btn-success">测试</a>
+                    </td>
+                <td>{{ record.c_time }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+
+    </div>
+
+
+{% endblock %}
+

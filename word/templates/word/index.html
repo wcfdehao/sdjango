@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}
+    <title>word</title>
+{% endblock %}
+
+{% block body %}
+
+<body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top ">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">新蓝 Word</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+
+            <li><a href="#">{{ request.user }}</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header" style="margin: auto;text-align: center">
+        <h1>人生是一个积累的过程 </h1>
+            <p>过去我们不能改变，今天决定了明天，把握当前，过好今天，成就未来！</p>
+        </div>
+        {% block content %}
+        <div class="container" style="width: 200px;margin-top: 20px">
+            <div style="margin-bottom: 10px" class="container">
+                <a class="btn btn-info" href="{% url 'word:create_record' %}">
+                    <h4>新建背诵</h4>
+                </a>
+            </div>
+            <div class="container">
+                <a class="btn btn-info" href="{% url 'word:record_list' %}">
+                <h4>背诵记录</h4>
+            </a>
+            </div>
+
+
+        </div>
+        {% endblock %}
+
+    </div>
+
+
+</body>
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends 'word/index.html' %}
+
+
+<script type="text/javascript">
+
+
+{#window.alert('ok')#}
+{#(function($){#}
+{#    $.fn.myTable=function(){#}
+{#        //这里写插件代码#}
+{#        return $(this).addClass('changed');#}
+{#    }#}
+{#    $.fn.color=function(value){#}
+{#   //这里写插件代码#}
+{#        return this.css("color",value);#}
+{#    }#}
+{#{)(jQuery)#}
+
+
+{#  create_thead(this)#}
+{# } #}
+
+
+
+
+
+
+</script>
+{% block content %}
+    <div class="container" style="width: 1000px">
+        <table class="table table-bordered " id="my">
+
+        </table>
+
+
+    </div>
+
+
+{% endblock %}
+{% block script %}
+    <script>
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+    (function ($) {
+        $.fn.myTable = function() {
+
+
+          function create_thead() {
+              var thead = $('<thead></thead>');
+              var tr = $('<tr></tr>');
+              var td1 = $('<td></td>');
+              var td2 = $('<td></td>');
+              var td3 = $('<td></td>');
+              td1.text('序号');
+              td2.text('单词');
+              td3.text('解释');
+              tr.append(td1);
+              tr.append(td2);
+              tr.append(td3);
+              thead.append(tr);
+              return thead;
+          }
+
+          function create_tbody() {
+              var tbody = $('<tbody></tbody>');
+
+              return tbody;
+          }
+            var last
+          function get_word_means(event) {
+              $("#error").html("")
+              var th = $(this)
+              var name = this.value;
+              last = event.timeStamp
+              if (event.which != 13){
+                  th.siblings().remove();
+                  if(name != ''){
+                      setTimeout(function () {
+                          if(last-event.timeStamp==0){
+                              var csrftoken = getCookie('csrftoken');
+                              $.post('/word/get_word_by_name/', {name:th.val(),'csrfmiddlewaretoken':csrftoken}, function (data, status) {
+                                  if(status == 'success'){
+
+                                      if(data.id != ''){
+                                          var input = $('<input type="hidden" name="id">');
+                                          input.val(data.id);
+                                          th.parent().append(input);
+                                          th.parent().next().text(data.means)
+                                      }else {
+                                          th.parent().next().html("<span style='color:red'>"+data.means+"</span>");
+
+                                      }
+
+                                  }
+                              })
+                          }
+                      }, 200)
+
+                  }else{
+                      th.parent().next().text('');
+                  }
+              }else {
+                  if(name != ''){
+                      var tbody = th.parents('tbody');
+                      var index = get_row_num(tbody);
+                      var row = create_row(index+1);
+                      tbody.append(row);
+                      row.find('input')[0].focus()
+                  }
+              }
+
+
+          }
+
+          function create_row(index) {
+
+              var tr = $('<tr></tr>')
+              var td1 = $('<td class="col-md-1">' + index + '</td>')
+
+              var td2 = $('<td class="col-md-2"style="padding: 0px"></td>')
+
+              var input = $('<input style="border: none;margin: 0px" class="form-control" type="text" placeholder="请输入单词">')
+              input.bind({'keyup': get_word_means})
+
+              td2.append(input)
+
+              var td3 = $('<td></td>')
+
+              tr.append(td1)
+              tr.append(td2)
+              tr.append(td3)
+
+              return tr
+
+          }
+
+
+          function create_tfoot() {
+              var tfoot = $('<tfoot></span></tfoot>')
+              var tr = $('<tr></tr>')
+              var td = $('<td colspan="3"><span id="error" style="color:red"></td>')
+              var c_button = $('<button class="btn btn-info pull-right">新增单词</button>')
+              c_button.bind('click', function () {
+                  var table = $(this).parents('table');
+                  var tbody = table.children('tbody');
+
+                  if(tbody.children().last().children('td').children('input').val() != ''){
+                      var index = get_row_num(tbody);
+                      var row = create_row(index+1);
+                      tbody.append(row);
+                      row.find('input')[0].focus();
+                  }
+
+
+              })
+              var save_button = $('<button class="btn btn-info pull-right">保存记录</button>')
+              save_button.bind('click',function () {
+                  var table = $(this).parents('table');
+                  inputs = table.find("input[name='id']");
+                  values = [];
+                  inputs.each(function () {
+                      values.push($(this).val());
+                  });
+                  console.log(values)
+                  if(values.length != 0){
+                      var csrftoken = getCookie('csrftoken');
+                      $.post('/word/create_record/', data={ids:values, 'csrfmiddlewaretoken':csrftoken}, function (data, status) {
+                            console.log(data)
+                            if(status == 'success'){
+
+                                if(data.status){
+                                    window.location = data.url
+                                }else {
+                                    $("#error").html(data.info)
+                                }
+                            }else {
+                                $("#error").html('创建失败，请重试！')
+                            }
+                      });
+                  }else {
+                      console.log($("#error"))
+                      $("#error").html("请输入单词")
+                  }
+
+              });
+              td.append(c_button);
+              td.append(save_button);
+              tr.append(td);
+              tfoot.append(tr);
+              return tfoot
+          }
+
+          function get_row_num(th) {
+            return th.children('tr').size()
+          }
+
+          function init(th) {
+              tbody = create_tbody()
+              index = get_row_num(tbody)
+              first_row = create_row(index+1)
+              tbody.append(first_row)
+              thead = create_thead()
+              tfoot = create_tfoot()
+              th.append(thead)
+              th.append(tfoot)
+              th.append(tbody)
+          }
+
+          init(this)
+        }
+    })(jQuery)
+
+   $("#my").myTable()
+    </script>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'king_admin/table_index.html' %}
+
+{% load tags %}
+
+{% block container %}
+    <form class="form-horizontal" method="post">{% csrf_token %}
+{#    {{ form_obj.errors }}#}
+    {% for field in form_obj %}
+
+      <div class="form-group {% if field.errors %}has-error{% endif %} ">
+            {% get_field_tag field %}
+{#        <label  class="col-sm-2 control-label">{{ field.label }}</label>#}
+
+        <div class="col-sm-6">
+            {% if field.name in admin_class.filter_horizontal %}
+
+            {% else %}
+                {{ field }}<label for="" class="control-label">{{ field.errors }}</label>
+            {% endif %}
+        </div>
+
+      </div>
+
+    {% endfor %}
+        <div class="form-group" >
+            <div class="col-sm-10">
+                <button type="submit" class="btn btn-success pull-right">保存</button>
+            </div>
+
+
+        </div>
+    </form>
+
+{#    {{ form_obj }}#}
+{#    {{ table_obj }}#}
+{% endblock %}

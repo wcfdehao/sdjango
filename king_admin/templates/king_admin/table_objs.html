@@ -1,0 +1,131 @@
+{% extends 'king_admin/table_index.html' %}
+
+{% load tags %}
+
+{% block container %}
+    <div class="panel panel-info">
+            <div class="panel-heading">
+            <h3 class="panel-title">{{ admin_class.opts.verbose_name_plural }} <a href="" class="btn btn-default " style="visibility: hidden ">aa</a><a href="{% url 'king_admin:table_obj_add' app_name table_name %}" style="" class="pull-right btn btn-default">增加</a></h3>
+            </div>
+            <div class="panel-body">
+
+                <div class="row">
+{#                    过滤#}
+                    <form method="get">
+                    <div class="row">
+                    {% for condition in admin_class.list_filter %}
+                        <div class="col-lg-2">
+                        <span>{{ condition }}</span>
+                        {% render_filter_ele condition admin_class filter_conditions %}
+                        </div>
+
+                    {% endfor %}
+{#                    携带排序参数#}
+                    {% if order_by_conditions.o %}
+                        <input type="hidden" name="o" value="{{ order_by_conditions.o }}">
+                    {% endif %}
+                        <div class="col-lg-2">
+                            <span> &nbsp;&nbsp;</span>
+                            <input type="submit" class="form-control btn-primary" value="过滤">
+                        </div>
+                    </div>
+                        <br>
+{#                    搜索#}
+                        <div class="row">
+                            <div class="col-lg-2">
+                                <input type="text" name="q" value="{{ filter_conditions.q }}" placeholder="搜索" class="form-control">
+                            </div>
+                            <div class="col-lg-2">
+                            <input type="submit" class="form-control btn-primary" value="搜索">
+                        </div>
+                        </div>
+
+
+                    </form>
+{#                过滤url#}
+                {% create_get_url filter_conditions as filter_url  %}
+                </div>
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            {% for column in admin_class.list_display %}
+
+                                {% if column != order_by_conditions.o %}
+                                <th><a href="?o={{ column }}{{ filter_url }}">{{ column }}</a>{% if order_by_conditions.o|cut:"-" == column %}<button type="button" class="close pull-right" ><span class="caret"></span>&nbsp;<a href="?page={{ query_sets.number }}{{ filter_url }}" ><span aria-hidden="true">&times;</span></a></button>{% endif %}</th>
+                                {% else %}
+                                <th><a href="?o=-{{ column }}{{ filter_url }}">{{ column }}</a><button type="button" class="close" aria-label="Close"><span class="dropup"><span class="caret"></span></span>&nbsp;<a href="?page={{ query_sets.number }}{{ filter_url }}" ><span aria-hidden="true">&times;</span></a></button></th>
+                                {% endif %}
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                    {% for obj in query_sets %}
+                        <tr>
+                        {% build_table_row obj admin_class app_name table_name %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot><tr><td>总共{{ query_sets.paginator.count }}条</td></tr></tfoot>
+                </table>
+{#            分页#}
+
+                <nav aria-label="Page navigation">
+                      <ul class="pagination">
+                          {% if query_sets.has_previous %}
+                            <li>
+                              <a href="?page={{ query_sets.previous_page_number }}{{ filter_url }}&o={{ order_by_conditions.o }}" aria-label="Previous">
+                                <span aria-hidden="true">上一页</span>
+                              </a>
+                            </li>
+                          {% else %}
+                              <li class="disabled">
+                                <span>
+                                 <span aria-hidden="true">上一页</span>
+                                </span>
+                              </li>
+                          {% endif %}
+                            {% create_paginator_ele query_sets filter_url order_by_conditions.o %}
+{#                          {% for num in query_sets.paginator.page_range %}#}
+{#                                {% if num <= 2 %}#}
+{#                                    <li{% if num == query_sets.number %} class="active"{% endif %}><a href="?page={{ num }}{{ filter_url }}">{{ num }}</a></li>#}
+{#                                {% endif %}#}
+{#                                {% if num > 2 and num|add:'2' <= query_sets.paginator.num_pages and query_sets.number < num|add:"2" and num < query_sets.number|add:"2" %}#}
+{#                                    <li{% if num == query_sets.number %} class="active"{% endif %}><a href="?page={{ num }}{{ filter_url }}">{{ num }}</a></li>#}
+{#                                {% endif %}#}
+{#                                {% if num|add:"2" > query_sets.paginator.num_pages %}#}
+{#                                    <li{% if num == query_sets.number %} class="active"{% endif %}><a href="?page={{ num }}{{ filter_url }}">{{ num }}</a></li>#}
+{#                                {% endif %}#}
+{#                              {% if num <= 2 or num|add:"2" > query_sets.paginator.num_pages or query_sets.number < num|add:"2" and num < query_sets.number|add:"2" %}#}
+{#                                  <li{% if num == query_sets.number %} class="active"{% endif %}><a href="?page={{ num }}{{ filter_url }}">{{ num }}</a></li>#}
+{#                                  {% if query_sets.number > 4 or query_sets|add:"4" < query_sets.paginator.num_pages  %}#}
+{#                                        <li><span>...</span></li>#}
+{#                                    {% endif %}#}
+{#                              {% endif %}#}
+{#                          {% endfor %}#}
+
+
+                          {% if query_sets.has_next %}
+                            <li>
+                              <a href="?page={{ query_sets.next_page_number }}{{ filter_url }}&o={{ order_by_conditions.o }}" aria-label="Next">
+                                <span aria-hidden="true">下一页</span>
+                              </a>
+                            </li>
+                          {% else %}
+                            <li class="disabled">
+                              <span>
+                                <span aria-hidden="true">下一页</span>
+                              </span>
+                            </li>
+                          {% endif %}
+
+                      </ul>
+                </nav>
+
+            </div>
+
+    </div>
+
+
+{% endblock %}

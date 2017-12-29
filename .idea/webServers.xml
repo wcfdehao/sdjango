@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="75e1c0b8-cb44-4226-8590-af95457f2896" name="word" url="http://www.litianqiang.com">
+        <fileTransfer host="www.litianqiang.com" port="22" rootFolder="/xinlan/word" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
